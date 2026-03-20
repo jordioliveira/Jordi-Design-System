@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Jordi Design System</title>
+
+    <!-- Scripts & Fonts (Re-used from original) -->
+    <script src="./assets/resource_3fa48481346f.js"></script>
+    <script src="./assets/iconify-icon_d39ffc6e4c56.js"></script>
+    <link href="./assets/css2_19fd9cc6b396.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --text-main: #1C1C1C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* ---------------------------------
+           1. ANIMATIONS & REVEALS
+        --------------------------------- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(2rem);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .text-reveal-wrapper {
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+
+        .text-reveal-content {
+            transform: translateY(110%);
+            opacity: 0;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+            display: block;
+        }
+
+        .reveal-active .text-reveal-content,
+        .text-reveal-wrapper.active .text-reveal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Stagger Delays */
+        .delay-100 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-200 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-300 {
+            transition-delay: 0.3s;
+        }
+
+        .delay-500 {
+            transition-delay: 0.5s;
+        }
+
+        .delay-700 {
+            transition-delay: 0.7s;
+        }
+
+        /* Carousel Ken Burns */
+        .carousel-slide {
+            position: absolute;
+            inset: 0;
+            transition: opacity 1.5s ease-in-out;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            transform: scale(1);
+            transition: transform 10s ease-out;
+        }
+
+        .carousel-slide.active img {
+            transform: scale(1.1);
+        }
+
+        /* Shimmer & Spin (From Gemini Animations) */
+        @keyframes shimmer {
+            from {
+                transform: translateX(-100%) skewX(-15deg);
+            }
+
+            to {
+                transform: translateX(200%) skewX(-15deg);
+            }
+        }
+
+        @keyframes spin-border {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin-border {
+            animation: spin-border 3s linear infinite;
+        }
+
+        .animate-shimmer {
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Nav Load Animation */
+        .nav-load {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.8s ease-out;
+        }
+
+        .nav-load.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Icon Alignment Fix */
+        iconify-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
+
+        /* ---------------------------------
+           2. INTERACTION SURFACES
+        --------------------------------- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .flashlight-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flashlight-card::before {
+            content: "";
+            position: absolute;
+            inset: 0px;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y),
+                    rgba(255, 255, 255, 0.6),
+                    transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .flashlight-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Custom Hover Effect */
+        .creative-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .creative-hover:hover {
+            background: var(--text-main);
+            color: var(--bg-main);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Transparent Lettering Mask */
+        .bg-clip-text-magic {
+            background-image: url('./assets/c7fa69dd-d7fb-48f2-a866-ef3663_f6b789593f38.webp');
+            background-size: cover;
+            background-position: center;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+
+        /* Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Floating Elements */
+        @keyframes float-soft {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .animate-float {
+            animation: float-soft 6s ease-in-out infinite;
+        }
+
+        /* Premium Metallic Gradient & Shimmer */
+        @keyframes metallic-shimmer-pan {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        .text-metallic {
+            color: #8b0000;
+            /* Fallback */
+            background: linear-gradient(to right,
+                    #8b0000 20%,
+                    #e11d48 40%,
+                    #ffffff 50%,
+                    #e11d48 60%,
+                    #8b0000 80%);
+            background-size: 200% auto;
+            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: metallic-shimmer-pan 4s linear infinite;
+            padding-bottom: 0.15em;
+            margin-bottom: -0.15em;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen selection:bg-stone-900 selection:text-white pb-10">
+
+    <!-- Main Container -->
+    <div class="max-w-[1440px] mx-auto border-x border-stone-200 relative bg-white shadow-2xl">
+
+        <!-- Background Glow Layer -->
+        <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+            <div
+                class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-stone-100 rounded-full blur-[100px] animate-float opacity-70">
+            </div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-stone-200 rounded-full blur-[120px] animate-float opacity-50"
+                style="animation-delay: -3s"></div>
+        </div>
+
+        <!-- Vertical Grid Guide Lines -->
+        <div class="absolute inset-0 pointer-events-none grid grid-cols-1 md:grid-cols-12 gap-0 z-0 h-full w-full">
+            <div class="hidden md:block md:col-span-3 border-r border-stone-100 h-full"></div>
+            <div class="hidden md:block md:col-span-6 border-r border-stone-100 h-full"></div>
+            <div class="hidden md:block md:col-span-3 h-full"></div>
+        </div>
+
+        <!-- Navigation (Glassmorphism) -->
+        <header class="relative z-50 border-b border-stone-200 sticky top-0 glass-panel nav-load">
+            <div class="flex justify-between items-center px-2 sm:px-4 md:px-6 py-3 md:py-5 overflow-hidden w-full">
+                <!-- Left Links -->
+                <div class="flex items-center gap-1 sm:gap-4 md:gap-8 relative z-10 flex-shrink min-w-0">
+                    <a class="text-[8px] sm:text-[10px] md:text-xs font-semibold tracking-widest uppercase hover:text-stone-500 transition-colors truncate hidden sm:block"
+                        href="#typography">Typo</a>
+                    <a class="text-[8px] sm:text-[10px] md:text-xs font-semibold tracking-widest uppercase hover:text-stone-500 transition-colors truncate hidden sm:block"
+                        href="#colors">Colors</a>
+                    <a class="text-xs font-semibold tracking-widest uppercase hidden md:block hover:text-stone-500 transition-colors"
+                        href="#components">Components</a>
+                </div>
+
+                <!-- Center Slogan / Logo -->
+                <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 md:gap-2 group cursor-pointer whitespace-nowrap">
+                    <div class="relative w-4 h-4 sm:w-5 sm:h-5 md:w-8 md:h-8 flex items-center justify-center shrink-0">
+                        <iconify-icon class="text-sm sm:text-base md:text-2xl group-hover:rotate-180 transition-transform duration-700 absolute"
+                            icon="solar:star-rings-linear"></iconify-icon>
+                        <div
+                            class="w-full h-full bg-stone-900 rounded-full opacity-0 group-hover:opacity-10 scale-0 group-hover:scale-150 transition-all duration-500 absolute">
+                        </div>
+                    </div>
+                    <style>
+                        .slogan-jordi-wave {
+                            display: flex;
+                            gap: 0;
+                        }
+
+                        .slogan-jordi-wave span {
+                            display: inline-block;
+                            transition: all 0.2s ease;
+                            transform-origin: bottom center;
+                        }
+
+                        .slogan-jordi-wave span:hover {
+                            color: #8B0000;
+                            transform: translateY(-8px) rotate(-3deg) scale(1.1);
+                            transition: all 0.1s ease;
+                        }
+                    </style>
+                    <div class="slogan-jordi-wave font-extrabold tracking-tight md:tracking-tighter text-[8px] sm:text-[10px] md:text-xl uppercase cursor-pointer">
+                        <span>N</span><span>o</span><span>&nbsp;</span><span>L</span><span>o</span><span>v</span><span>a</span><span>b</span><span>l</span><span>e</span><span>.</span><span>&nbsp;</span><span>S</span><span>t</span><span>r</span><span>a</span><span>i</span><span>g</span><span>h</span><span>t</span><span>&nbsp;</span><span>W</span><span>o</span><span>r</span><span>k</span><span>.</span>
+                    </div>
+                </div>
+
+                <!-- Right Links -->
+                <div class="flex items-center gap-1 sm:gap-4 md:gap-8 relative z-10 flex-shrink-0">
+                    <a class="text-xs font-semibold tracking-widest uppercase hidden md:block hover:text-stone-500 transition-colors"
+                        href="#layout">Layout</a>
+                    <a class="text-[8px] sm:text-[10px] md:text-xs font-semibold tracking-widest uppercase hover:text-stone-500 transition-colors hidden sm:block"
+                        href="#motion">Anim</a>
+                    <button
+                        class="px-2 py-1 md:px-4 md:py-2 bg-stone-900 text-white rounded-full text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-stone-700 transition-all">Download</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             FIRST FOLD: HERO SECTION
+        =========================================== -->
+        <section
+            class="relative z-10 flex flex-col md:grid md:grid-cols-12 border-b border-stone-200 min-h-[85vh] overflow-hidden bg-white">
+
+            <div
+                class="col-span-1 md:col-span-8 lg:col-span-9 border-b md:border-b-0 md:border-r border-stone-200 relative flex flex-col justify-center p-6 sm:p-8 md:p-16">
+
+                <!-- Background Creative Carousel / Abstraction element -->
+                <div
+                    class="absolute top-10 right-[-10px] sm:right-0 w-[220px] h-[320px] sm:w-[280px] sm:h-[380px] md:top-10 md:right-10 md:w-[300px] md:h-[400px] lg:w-[450px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl skew-y-3 -rotate-3 z-0">
+                    <div class="w-full h-full relative" id="hero-carousel">
+                        <div class="carousel-slide active">
+                            <img class="w-full h-full object-cover grayscale opacity-90 transition-all duration-[10s] hover:scale-110"
+                                src="./assets/c7fa69dd-d7fb-48f2-a866-ef3663_f6b789593f38.webp" />
+                        </div>
+                        <div class="carousel-slide">
+                            <img class="w-full h-full object-cover grayscale opacity-90 transition-all duration-[10s] hover:scale-110"
+                                src="./assets/6c710de5-9712-4c8e-a7db-59ac54_b647957b5aa5.webp" />
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-stone-900 mix-blend-overlay opacity-30"></div>
+                </div>
+
+                <div
+                    class="relative md:absolute md:top-8 md:left-8 flex items-center gap-3 z-20 reveal delay-100 mb-8 md:mb-0">
+                    <div class="w-3 h-3 bg-stone-900 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-mono tracking-[0.2em] text-stone-500 uppercase">Version 2.0.4</span>
+                </div>
+
+                <!-- Giant Typography with Metallic Effect -->
+                <div class="relative z-20 mt-4 md:mt-20 pointer-events-none">
+                    <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-bold tracking-tighter leading-[1.1] md:leading-[0.85] break-words"
+                        id="hero-title">
+                        <span class="text-reveal-wrapper"><span
+                                class="text-reveal-content delay-200 text-metallic block">Jordi</span></span><br>
+                        <span class="text-reveal-wrapper"><span
+                                class="text-reveal-content delay-300 text-metallic block">Design</span></span><br>
+                        <span class="text-reveal-wrapper"><span
+                                class="text-reveal-content delay-500 text-metallic block">System</span></span>
+                    </h1>
+                </div>
+
+                <div
+                    class="relative z-20 mt-10 md:mt-16 w-full max-w-xl flashlight-card border border-stone-200/50 bg-white/60 md:bg-white/40 backdrop-blur-md p-6 sm:p-8 shadow-sm reveal delay-700">
+                    <p class="text-base sm:text-lg text-stone-700 leading-relaxed mb-8">
+                        A robust, high-fidelity system designed for scale. Featuring pristine typography, pixel-perfect
+                        interactions, and an uncompromising white aesthetic.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                        <button
+                            class="group relative flex items-center justify-center overflow-hidden rounded-full p-[1px] leading-none pointer-events-auto w-full sm:w-auto">
+                            <span
+                                class="absolute inset-[-1000%] animate-spin-border bg-[conic-gradient(from_0deg,transparent_0_340deg,#1c1c1c_360deg)]"></span>
+                            <span
+                                class="relative flex h-full w-full items-center justify-between sm:justify-start rounded-full bg-white pt-4 pr-6 pb-4 pl-8 sm:pr-10 sm:pl-10 border border-stone-100">
+                                <span class="absolute inset-0 overflow-hidden rounded-full">
+                                    <span
+                                        class="absolute top-0 left-0 h-full w-full -skew-x-12 bg-gradient-to-r from-transparent via-stone-200/50 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100"></span>
+                                </span>
+                                <span class="relative z-10 flex items-center">
+                                    <span class="text-sm font-bold uppercase tracking-widest text-stone-900">Explore
+                                        Components</span>
+                                </span>
+                                <span
+                                    class="relative z-10 ml-4 flex items-center justify-center w-8 h-8 rounded-full bg-stone-100 text-stone-600 transition-all duration-300 group-hover:bg-stone-900 group-hover:text-white group-hover:-rotate-45">
+                                    <iconify-icon class="text-lg" icon="solar:arrow-right-linear"></iconify-icon>
+                                </span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    class="relative md:absolute md:bottom-10 md:left-16 flex items-center gap-4 z-20 reveal delay-700 mt-12 md:mt-0">
+                    <iconify-icon class="text-stone-400 text-3xl animate-bounce"
+                        icon="solar:round-alt-arrow-down-linear"></iconify-icon>
+                    <span class="text-xs font-mono uppercase text-stone-400 tracking-widest">Scroll to explore</span>
+                </div>
+            </div>
+
+            <div
+                class="col-span-1 md:col-span-4 lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 md:grid-rows-3 h-auto md:h-full md:min-h-[400px] border-t md:border-t-0 md:border-l border-stone-100 bg-stone-50/30">
+
+                <div
+                    class="row-span-1 border-b sm:border-r md:border-r-0 border-stone-200 p-8 flex flex-col justify-center reveal delay-300 creative-hover group relative overflow-hidden">
+                    <div
+                        class="absolute right-[-10%] bottom-[-10%] opacity-0 group-hover:opacity-5 transition-opacity duration-700">
+                        <iconify-icon class="text-[8rem] md:text-[12rem] text-stone-900"
+                            icon="solar:layers-minimalistic-bold-duotone"></iconify-icon>
+                    </div>
+                    <iconify-icon class="text-4xl text-stone-400 mb-6 group-hover:text-white transition-colors"
+                        icon="solar:layers-minimalistic-linear"></iconify-icon>
+                    <div class="relative z-10">
+                        <h2 class="text-5xl md:text-6xl font-semibold tracking-tighter mb-1">240+</h2>
+                        <span
+                            class="text-xs font-mono text-stone-500 group-hover:text-stone-100 uppercase tracking-widest block">Components</span>
+                    </div>
+                </div>
+
+                <div
+                    class="row-span-1 border-b border-stone-200 p-8 flex flex-col justify-center reveal delay-500 creative-hover group relative overflow-hidden">
+                    <div
+                        class="absolute right-[-10%] bottom-[-10%] opacity-0 group-hover:opacity-5 transition-opacity duration-700">
+                        <iconify-icon class="text-[8rem] md:text-[12rem] text-stone-900"
+                            icon="solar:palette-bold-duotone"></iconify-icon>
+                    </div>
+                    <iconify-icon class="text-4xl text-stone-400 mb-6 group-hover:text-white transition-colors"
+                        icon="solar:palette-linear"></iconify-icon>
+                    <div class="relative z-10">
+                        <h2 class="text-5xl md:text-6xl font-semibold tracking-tighter mb-1">Purity</h2>
+                        <span
+                            class="text-xs font-mono text-stone-500 group-hover:text-stone-100 uppercase tracking-widest block">White
+                            Base System</span>
+                    </div>
+                </div>
+
+                <div
+                    class="col-span-1 sm:col-span-2 md:col-span-1 row-span-1 p-8 flex flex-col justify-center reveal delay-700 bg-stone-900 text-white relative overflow-hidden group hover:bg-black transition-colors cursor-pointer">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700">
+                    </div>
+                    <div class="z-10 flex justify-between items-center mb-4">
+                        <iconify-icon class="text-3xl text-stone-400 group-hover:text-white transition-colors"
+                            icon="solar:magic-stick-3-linear"></iconify-icon>
+                        <span
+                            class="px-2 py-1 border border-stone-700 rounded-full text-[10px] uppercase tracking-widest">Interactive</span>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-3xl font-medium tracking-tight mb-2">Fluid Motion</h3>
+                        <p class="text-stone-400 text-sm leading-relaxed">Integrated hover physics and micro-animations
+                            on every element.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION: TYPOGRAPHY
+        =========================================== -->
+        <section id="typography" class="relative z-10 border-b border-stone-200 bg-stone-50/50">
+            <!-- Section Header -->
+            <div class="p-8 md:p-16 border-b border-stone-200 bg-white">
+                <span class="text-xs font-mono uppercase text-stone-500 tracking-widest block mb-4">01 /
+                    Foundations</span>
+                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-stone-900">Typography</h2>
+            </div>
+
+            <div class="grid grid-cols-1">
+                <!-- Heading 1 -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 border-b border-stone-200 p-8 md:p-16 items-baseline group hover:bg-white transition-colors duration-300 reveal">
+                    <div class="col-span-3 text-xs font-mono text-stone-400 uppercase tracking-widest mb-4 md:mb-0">
+                        Display H1</div>
+                    <div class="col-span-7">
+                        <h1
+                            class="text-6xl md:text-8xl font-bold tracking-tighter leading-none text-stone-900 group-hover:-translate-y-1 transition-transform duration-300">
+                            Digital Architect
+                        </h1>
+                    </div>
+                    <div class="col-span-2 text-left md:text-right text-xs font-mono text-stone-400 mt-4 md:mt-0">
+                        Bold / 96px / -2%
+                    </div>
+                </div>
+
+                <!-- Heading 2 -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 border-b border-stone-200 p-8 md:p-16 items-baseline group hover:bg-white transition-colors duration-300 reveal delay-100">
+                    <div class="col-span-3 text-xs font-mono text-stone-400 uppercase tracking-widest mb-4 md:mb-0">
+                        Heading H2</div>
+                    <div class="col-span-7">
+                        <h2
+                            class="text-5xl md:text-6xl font-semibold tracking-tighter text-stone-900 group-hover:-translate-y-1 transition-transform duration-300">
+                            Design & Strategy
+                        </h2>
+                    </div>
+                    <div class="col-span-2 text-left md:text-right text-xs font-mono text-stone-400 mt-4 md:mt-0">
+                        Semibold / 60px / -2%
+                    </div>
+                </div>
+
+                <!-- Heading 3 -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 border-b border-stone-200 p-8 md:p-16 items-baseline group hover:bg-white transition-colors duration-300 reveal delay-200">
+                    <div class="col-span-3 text-xs font-mono text-stone-400 uppercase tracking-widest mb-4 md:mb-0">
+                        Heading H3</div>
+                    <div class="col-span-7">
+                        <h3
+                            class="text-4xl font-medium tracking-tight text-stone-900 group-hover:-translate-y-1 transition-transform duration-300">
+                            Case Studies
+                        </h3>
+                    </div>
+                    <div class="col-span-2 text-left md:text-right text-xs font-mono text-stone-400 mt-4 md:mt-0">
+                        Medium / 36px / -1%
+                    </div>
+                </div>
+
+                <!-- Heading 4 -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 border-b border-stone-200 p-8 md:p-16 items-baseline group hover:bg-white transition-colors duration-300 reveal">
+                    <div class="col-span-3 text-xs font-mono text-stone-400 uppercase tracking-widest mb-4 md:mb-0">
+                        Heading H4</div>
+                    <div class="col-span-7">
+                        <h4
+                            class="text-2xl font-medium tracking-tight text-stone-900 group-hover:-translate-y-1 transition-transform duration-300">
+                            Component Overview
+                        </h4>
+                    </div>
+                    <div class="col-span-2 text-left md:text-right text-xs font-mono text-stone-400 mt-4 md:mt-0">
+                        Medium / 24px / 0%
+                    </div>
+                </div>
+
+                <!-- Body / Paragraph -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 border-b border-stone-200 p-8 md:p-16 items-baseline group hover:bg-white transition-colors duration-300 reveal">
+                    <div class="col-span-3 text-xs font-mono text-stone-400 uppercase tracking-widest mb-4 md:mb-0">Body
+                        Large</div>
+                    <div class="col-span-7">
+                        <p class="text-lg leading-relaxed text-stone-700">
+                            Thoughts on the intersection of design, technology, and human psychology. Exploring how we
+                            can build better tools for thought, creating seamless experiences that merge form and
+                            function.
+                        </p>
+                    </div>
+                    <div class="col-span-2 text-left md:text-right text-xs font-mono text-stone-400 mt-4 md:mt-0">
+                        Regular / 18px / 160%
+                    </div>
+                </div>
+
+                <!-- Meta / Labels -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 p-8 md:p-16 items-baseline group hover:bg-white transition-colors duration-300 reveal">
+                    <div class="col-span-3 text-xs font-mono text-stone-400 uppercase tracking-widest mb-4 md:mb-0">
+                        Label / Mono</div>
+                    <div class="col-span-7">
+                        <span class="text-xs font-mono uppercase tracking-[0.2em] text-stone-500">
+                            Interactive Element Subtitle
+                        </span>
+                    </div>
+                    <div class="col-span-2 text-left md:text-right text-xs font-mono text-stone-400 mt-4 md:mt-0">
+                        Mono / 12px / 20%
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION: COLORS
+        =========================================== -->
+        <section id="colors" class="relative z-10 border-b border-stone-200 bg-white">
+            <!-- Section Header -->
+            <div class="p-8 md:p-16 border-b border-stone-200">
+                <span class="text-xs font-mono uppercase text-stone-500 tracking-widest block mb-4">02 /
+                    Foundations</span>
+                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-stone-900">Color System</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4">
+                <!-- White -->
+                <div
+                    class="col-span-1 p-8 md:p-12 border-r border-b border-stone-200 bg-white flex flex-col justify-between aspect-[4/3] creative-hover reveal">
+                    <div class="flex justify-between items-start">
+                        <div class="text-stone-900 font-bold text-lg">Main</div>
+                        <iconify-icon class="text-stone-300"
+                            icon="solar:round-transfer-horizontal-linear"></iconify-icon>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Background
+                        </div>
+                        <div class="font-mono text-xs text-stone-500">#FFFFFF</div>
+                    </div>
+                </div>
+
+                <!-- Stone 50 -->
+                <div
+                    class="col-span-1 p-8 md:p-12 border-r border-b border-stone-200 bg-stone-50 flex flex-col justify-between aspect-[4/3] creative-hover reveal delay-100">
+                    <div class="text-stone-900 font-bold text-lg">Secondary</div>
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Surface / Hover
+                        </div>
+                        <div class="font-mono text-xs text-stone-500">#FAFAF9</div>
+                    </div>
+                </div>
+
+                <!-- Stone 200 -->
+                <div
+                    class="col-span-1 p-8 md:p-12 border-r border-b md:border-b-0 border-stone-200 bg-stone-200 flex flex-col justify-between aspect-[4/3] creative-hover reveal delay-200">
+                    <div class="text-stone-900 font-bold text-lg">Border</div>
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-1">Lines /
+                            Dividers</div>
+                        <div class="font-mono text-xs text-stone-600">#E7E5E4</div>
+                    </div>
+                </div>
+
+                <!-- Stone 900 -->
+                <div
+                    class="col-span-1 p-8 md:p-12 bg-stone-900 flex flex-col justify-between aspect-[4/3] hover:bg-black transition-colors reveal delay-300 group">
+                    <div class="text-white font-bold text-lg flex justify-between">
+                        Contrast
+                        <div class="w-2 h-2 bg-white rounded-full animate-pulse opacity-0 group-hover:opacity-100">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Text / Accent
+                        </div>
+                        <div class="font-mono text-xs text-stone-300">#1C1917</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION: COMPONENTS (Buttons & Cards)
+        =========================================== -->
+        <section id="components" class="relative z-10 border-b border-stone-200 bg-stone-50/30">
+            <!-- Section Header -->
+            <div class="p-8 md:p-16 border-b border-stone-200 bg-white">
+                <span class="text-xs font-mono uppercase text-stone-500 tracking-widest block mb-4">03 / Interface
+                    Elements</span>
+                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-stone-900">Components</h2>
+            </div>
+
+            <!-- Buttons Grid -->
+            <div class="p-8 md:p-16 border-b border-stone-200">
+                <div class="mb-12 reveal">
+                    <h3 class="text-lg font-bold uppercase tracking-widest text-stone-900">Button Actions</h3>
+                    <p class="text-stone-500 text-sm mt-2">Interactive states with micro-animations and beam physics.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                    <!-- Default / Primary -->
+                    <div class="reveal flex flex-col gap-4 items-start">
+                        <span class="text-xs font-mono text-stone-400 uppercase tracking-widest">Primary</span>
+                        <!-- Shimmer White Button -->
+                        <button
+                            class="group relative flex items-center justify-center overflow-hidden rounded-full p-[1px] leading-none">
+                            <span
+                                class="absolute inset-[-1000%] animate-spin-border bg-[conic-gradient(from_0deg,transparent_0_340deg,#1c1c1c_360deg)]"></span>
+                            <span
+                                class="relative flex h-full w-full items-center rounded-full bg-white px-8 py-4 border border-stone-100">
+                                <span class="absolute inset-0 overflow-hidden rounded-full">
+                                    <span
+                                        class="absolute top-0 left-0 h-full w-full -skew-x-12 bg-gradient-to-r from-transparent via-stone-200/50 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100"></span>
+                                </span>
+                                <span class="relative z-10 flex items-center gap-2">
+                                    <span class="text-sm font-bold uppercase tracking-widest text-stone-900">Submit
+                                        Action</span>
+                                    <iconify-icon
+                                        class="text-lg text-stone-900 group-hover:translate-x-1 transition-transform"
+                                        icon="solar:arrow-right-linear"></iconify-icon>
+                                </span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Secondary / Dark -->
+                    <div class="reveal delay-100 flex flex-col gap-4 items-start">
+                        <span class="text-xs font-mono text-stone-400 uppercase tracking-widest">Secondary</span>
+                        <button
+                            class="group relative flex items-center justify-center overflow-hidden rounded-full p-[1px] leading-none">
+                            <span
+                                class="absolute inset-[-1000%] animate-spin-border bg-[conic-gradient(from_0deg,transparent_0_340deg,white_360deg)]"></span>
+                            <span class="relative flex h-full w-full items-center rounded-full bg-stone-900 px-8 py-4">
+                                <span class="absolute inset-0 overflow-hidden rounded-full">
+                                    <span
+                                        class="absolute top-0 left-0 h-full w-full -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100"></span>
+                                </span>
+                                <span class="relative z-10 flex items-center gap-2">
+                                    <span class="text-sm font-bold uppercase tracking-widest text-white">Save
+                                        Draft</span>
+                                </span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Outline -->
+                    <div class="reveal delay-200 flex flex-col gap-4 items-start">
+                        <span class="text-xs font-mono text-stone-400 uppercase tracking-widest">Outline (Hover
+                            fill)</span>
+                        <button
+                            class="px-8 py-4 border border-stone-300 rounded-full text-sm font-bold uppercase tracking-widest text-stone-900 relative overflow-hidden group transition-all">
+                            <span
+                                class="absolute inset-0 bg-stone-900 scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-300 ease-in-out z-0"></span>
+                            <span class="relative z-10 group-hover:text-white transition-colors duration-300">View
+                                Data</span>
+                        </button>
+                    </div>
+
+                    <!-- Disabled -->
+                    <div class="reveal delay-300 flex flex-col gap-4 items-start">
+                        <span class="text-xs font-mono text-stone-400 uppercase tracking-widest">Disabled</span>
+                        <button disabled
+                            class="px-8 py-4 border border-stone-200 bg-stone-100 rounded-full text-sm font-bold uppercase tracking-widest text-stone-400 cursor-not-allowed opacity-70">
+                            Processing...
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="p-8 md:p-16">
+                <div class="mb-12 reveal">
+                    <h3 class="text-lg font-bold uppercase tracking-widest text-stone-900">Card Systems</h3>
+                    <p class="text-stone-500 text-sm mt-2">Surface variations, hover lifts, and glassmorphism elements.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <!-- Solid Card with Hover Lift -->
+                    <div
+                        class="col-span-1 group border border-stone-200 bg-white p-8 hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 reveal cursor-pointer relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-0 h-0 border-t-[40px] border-r-[40px] border-t-transparent border-r-stone-100 group-hover:border-r-stone-900 transition-colors duration-500">
+                        </div>
+                        <iconify-icon class="text-4xl text-stone-400 group-hover:text-stone-900 transition-colors mb-6"
+                            icon="solar:folder-with-files-linear"></iconify-icon>
+                        <h4 class="text-2xl font-semibold tracking-tight mb-2">Documentation</h4>
+                        <p class="text-stone-500 text-sm leading-relaxed mb-6">Solid background card with a subtle lift
+                            and shadow expansion on hover.</p>
+                        <div
+                            class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-stone-900 group-hover:pl-2 transition-all">
+                            Explore <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <!-- Flashlight Card (Interactive outline) -->
+                    <div class="col-span-1 group flashlight-card border border-stone-200 bg-stone-50 p-8 hover:bg-stone-100 transition-colors duration-500 reveal delay-100 cursor-pointer"
+                        onmousemove="const cardRect = this.getBoundingClientRect(); this.style.setProperty('--mouse-x', `${event.clientX - cardRect.left}px`); this.style.setProperty('--mouse-y', `${event.clientY - cardRect.top}px`);">
+                        <div class="flex justify-between items-start mb-6">
+                            <iconify-icon
+                                class="text-4xl text-stone-400 group-hover:text-stone-900 transition-colors relative z-10"
+                                icon="solar:cpu-bold-duotone"></iconify-icon>
+                            <span
+                                class="text-[10px] font-mono uppercase tracking-widest text-stone-400 border border-stone-200 px-2 py-1 rounded-full bg-white relative z-10">Sensors
+                                Active</span>
+                        </div>
+                        <h4 class="text-2xl font-semibold tracking-tight mb-2 relative z-10">Flashlight Effect</h4>
+                        <p class="text-stone-500 text-sm leading-relaxed mb-6 relative z-10">Move your cursor over this
+                            card to reveal a soft radial gradient underlying the surface.</p>
+                    </div>
+
+                    <!-- Glass Image Card -->
+                    <div
+                        class="col-span-1 border border-stone-200 relative overflow-hidden group min-h-[300px] reveal delay-200 cursor-pointer">
+                        <div class="absolute inset-0 bg-stone-100">
+                            <img class="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 group-hover:grayscale-0 transition-all duration-[2s]"
+                                src="./assets/ddab06d9-9060-42a5-9052-32121a_7062a2506669.webp"
+                                alt="Abstract building" />
+                        </div>
+                        <!-- Glass Overlay Content -->
+                        <div
+                            class="absolute bottom-4 left-4 right-4 bg-white/70 backdrop-blur-md border border-white/50 p-6 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                            <h4 class="text-xl font-semibold tracking-tight mb-1 text-stone-900">Project Reveal</h4>
+                            <p class="text-stone-700 text-xs font-mono uppercase tracking-widest">Glassmorphism Card</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION: COMPONENTS P2 (Inputs, Badges, Navbars)
+        =========================================== -->
+        <section class="relative z-10 border-b border-stone-200 bg-white">
+            <div class="p-8 md:p-16 border-b border-stone-200">
+                <div class="mb-12 reveal">
+                    <h3 class="text-lg font-bold uppercase tracking-widest text-stone-900">Form Controls & Details</h3>
+                    <p class="text-stone-500 text-sm mt-2">Inputs with focus rings, structural navbars, and
+                        micro-context badges.</p>
+                </div>
+
+                <!-- Inputs Area -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20 reveal">
+                    <!-- Standard Input -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase tracking-widest text-stone-900">Email Address</label>
+                        <div class="relative group">
+                            <iconify-icon
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-stone-900 transition-colors"
+                                icon="solar:letter-linear"></iconify-icon>
+                            <input type="email" placeholder="name@company.com"
+                                class="w-full bg-stone-50 border border-stone-200 rounded-xl py-4 pl-12 pr-4 text-stone-900 outline-none focus:bg-white focus:border-stone-900 focus:ring-4 focus:ring-stone-100 transition-all font-mono text-sm placeholder:text-stone-400" />
+                        </div>
+                    </div>
+
+                    <!-- Floating Label Input (Creative) -->
+                    <div class="flex flex-col gap-2 relative mt-4 md:mt-0">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <input type="text" name="floating_company" id="floating_company"
+                                class="block py-4 px-4 w-full text-base text-stone-900 bg-transparent border-0 border-b-2 border-stone-200 appearance-none focus:outline-none focus:ring-0 focus:border-stone-900 peer transition-colors"
+                                placeholder=" " required />
+                            <label for="floating_company"
+                                class="peer-focus:font-medium absolute text-sm text-stone-500 duration-300 transform -translate-y-8 scale-75 top-4 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-stone-900 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8 uppercase tracking-widest">Company
+                                Name</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges & Tooltips -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20 reveal delay-100">
+                    <div>
+                        <h4 class="text-sm font-bold uppercase tracking-widest text-stone-900 mb-6">Badges</h4>
+                        <div class="flex flex-wrap gap-4">
+                            <span
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 border border-stone-200 text-xs font-mono uppercase tracking-widest text-stone-600">
+                                <div class="w-1.5 h-1.5 rounded-full bg-stone-400"></div> Neutral
+                            </span>
+                            <span
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-900 border border-stone-900 text-xs font-mono uppercase tracking-widest text-white">
+                                <div class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div> Active
+                            </span>
+                            <span
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-stone-300 text-xs font-mono uppercase tracking-widest text-stone-900 hover:border-stone-900 transition-colors cursor-pointer">
+                                <iconify-icon icon="solar:star-linear"></iconify-icon> Interactive
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold uppercase tracking-widest text-stone-900 mb-6">Tooltips (Hover
+                            below)</h4>
+                        <div class="flex items-center gap-8">
+                            <div class="relative group inline-block cursor-help">
+                                <span class="text-stone-500 border-b border-dashed border-stone-400 pb-1">Hover
+                                    me</span>
+                                <div
+                                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                                    <span class="font-mono tracking-widest uppercase">Info details</span>
+                                    <div
+                                        class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structural Navbars -->
+                <div class="reveal delay-200">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-stone-900 mb-6">Navbar Structures</h4>
+
+                    <!-- Minimal Navbar -->
+                    <div
+                        class="w-full border border-stone-200 rounded-2xl bg-white p-4 flex justify-between items-center mb-6 hover:shadow-lg transition-shadow">
+                        <div class="flex font-bold uppercase tracking-tighter text-lg items-center gap-2">
+                            <div class="w-6 h-6 bg-stone-900 rounded-sm rotate-45"></div> Logo
+                        </div>
+                        <div class="hidden md:flex gap-6">
+                            <a href="#"
+                                class="text-sm font-medium text-stone-500 hover:text-stone-900 relative group">Solutions
+                                <span
+                                    class="absolute -bottom-1 left-0 w-0 h-0.5 bg-stone-900 group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                            <a href="#"
+                                class="text-sm font-medium text-stone-500 hover:text-stone-900 relative group">Company
+                                <span
+                                    class="absolute -bottom-1 left-0 w-0 h-0.5 bg-stone-900 group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                        </div>
+                        <button
+                            class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors">
+                            <iconify-icon icon="solar:hamburger-menu-linear"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION: ICONOGRAPHY
+        =========================================== -->
+        <section id="iconography" class="relative z-10 border-b border-stone-200 bg-stone-50/50">
+            <div class="p-8 md:p-16 border-b border-stone-200 bg-white">
+                <span class="text-xs font-mono uppercase text-stone-500 tracking-widest block mb-4">04 / Visual
+                    Language</span>
+                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-stone-900">Iconography</h2>
+            </div>
+
+            <div class="p-8 md:p-16">
+                <p class="text-stone-500 text-sm mb-12 max-w-2xl reveal">A curated set from Solar Icons, utilized for
+                    their balanced geometry, utilizing both linear (for standard actions) and bold-duotone (for creative
+                    accents and backgrounds).</p>
+
+                <div
+                    class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-px bg-stone-200 border border-stone-200 rounded-2xl overflow-hidden reveal delay-100">
+
+                    <!-- Icon Gen Loop Manual Simulation -->
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:scale-125"
+                            icon="solar:home-smile-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:-rotate-12"
+                            icon="solar:settings-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:scale-125"
+                            icon="solar:user-circle-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:rotate-12"
+                            icon="solar:magnifer-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:translate-x-1"
+                            icon="solar:arrow-right-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:-translate-y-1"
+                            icon="solar:cloud-upload-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:scale-125"
+                            icon="solar:bell-linear"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-900 transition-colors cursor-pointer">
+                        <iconify-icon
+                            class="text-3xl text-stone-600 group-hover:text-white transition-colors duration-300 group-hover:rotate-180"
+                            icon="solar:restart-circle-linear"></iconify-icon>
+                    </div>
+
+                    <!-- Duotone Row -->
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-50 transition-colors cursor-pointer">
+                        <iconify-icon class="text-4xl text-stone-900 group-hover:scale-110 transition-transform"
+                            icon="solar:shield-check-bold-duotone"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-50 transition-colors cursor-pointer">
+                        <iconify-icon class="text-4xl text-stone-900 group-hover:scale-110 transition-transform"
+                            icon="solar:map-point-bold-duotone"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-50 transition-colors cursor-pointer">
+                        <iconify-icon class="text-4xl text-stone-900 group-hover:scale-110 transition-transform"
+                            icon="solar:video-library-bold-duotone"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-white flex flex-col items-center justify-center p-6 aspect-square group hover:bg-stone-50 transition-colors cursor-pointer">
+                        <iconify-icon class="text-4xl text-stone-900 group-hover:scale-110 transition-transform"
+                            icon="solar:wallet-money-bold-duotone"></iconify-icon>
+                    </div>
+                    <div
+                        class="bg-stone-900 flex flex-col items-center justify-center p-6 col-span-4 transition-colors cursor-pointer group relative overflow-hidden">
+                        <div
+                            class="absolute inset-0 bg-black scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500">
+                        </div>
+                        <div class="relative z-10 flex items-center justify-between w-full px-4">
+                            <span class="text-white text-xs font-mono uppercase tracking-widest">Icon Collection</span>
+                            <span
+                                class="w-8 h-8 rounded-full border border-stone-700 text-white flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors">
+                                <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION: MOTION & ANIMATIONS OVERVIEW
+        =========================================== -->
+        <section id="motion" class="relative z-10 bg-white">
+            <div class="p-8 md:p-16 border-b border-stone-200">
+                <span class="text-xs font-mono uppercase text-stone-500 tracking-widest block mb-4">05 / Dynamics</span>
+                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-stone-900">Motion Architecture</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-stone-200">
+                <!-- Reveal Animation Demo -->
+                <div class="p-8 md:p-16 flex flex-col justify-center min-h-[400px]">
+                    <h3 class="text-2xl font-semibold tracking-tight mb-4">Cascade Reveal</h3>
+                    <p class="text-stone-500 text-sm mb-10 max-w-sm">Elements fade and translate upwards as they enter
+                        the viewport, strictly staggered using CSS variables or dedicated delay classes.</p>
+
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 bg-stone-200 rounded-xl reveal active play-state-demo"></div>
+                        <div class="w-16 h-16 bg-stone-300 rounded-xl reveal delay-100 active play-state-demo"></div>
+                        <div class="w-16 h-16 bg-stone-400 rounded-xl reveal delay-200 active play-state-demo"></div>
+                        <div class="w-16 h-16 bg-stone-900 rounded-xl reveal delay-300 active play-state-demo"></div>
+                    </div>
+                    <button
+                        onclick="document.querySelectorAll('.play-state-demo').forEach(e => { e.classList.remove('active'); setTimeout(() => e.classList.add('active'), 100); })"
+                        class="mt-8 text-xs font-bold uppercase tracking-widest text-stone-900 flex items-center gap-2 hover:opacity-50 transition-opacity">
+                        <iconify-icon icon="solar:refresh-linear"></iconify-icon> Replay Animation
+                    </button>
+                </div>
+
+                <!-- Glow/Subconscious Motion Demo -->
+                <div
+                    class="p-8 md:p-16 flex flex-col justify-center min-h-[400px] relative overflow-hidden bg-stone-50">
+                    <div class="absolute inset-0 pointer-events-none z-0">
+                        <div
+                            class="absolute top-[20%] right-[20%] w-[200px] h-[200px] bg-white rounded-full blur-[40px] animate-float">
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-semibold tracking-tight mb-4">Subconscious Glow</h3>
+                        <p class="text-stone-500 text-sm mb-10 max-w-sm">Background gradients and blurred geometric
+                            shapes that slowly float independent of scroll, providing systemic life.</p>
+
+                        <div
+                            class="inline-flex border border-stone-200 bg-white/50 backdrop-blur-md px-6 py-3 rounded-full items-center gap-3">
+                            <span class="w-2 h-2 bg-stone-900 rounded-full animate-pulse"></span>
+                            <span class="text-xs font-mono uppercase tracking-widest text-stone-900">System
+                                Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Initialization Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Navbar Loading Animation
+            setTimeout(() => {
+                document.querySelector('header').classList.add('loaded');
+            }, 100);
+
+            // 2. Trigger Hero Title Text Reveal
+            setTimeout(() => {
+                const heroTitle = document.getElementById('hero-title');
+                if (heroTitle) heroTitle.classList.add('reveal-active');
+            }, 300);
+
+            // 3. Scroll Observer for Reveals
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // 4. Hero Carousel Logic
+            const slides = document.querySelectorAll('.carousel-slide');
+            let currentSlide = 0;
+            if (slides.length > 0) {
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 6000);
+            }
+        });
+    </script>
+</body>
+
+</html>
